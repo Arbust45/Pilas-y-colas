@@ -1,0 +1,145 @@
+import tkinter
+from tkinter import *
+from tkinter import messagebox
+
+class Nodo:
+    def __init__(self, valor):
+        self.valor = valor
+        self.siguiente = None
+
+class Cola:
+    def __init__(self):
+        self.frente = None
+        self.final = None
+
+    def esta_vacia(self):
+        return self.frente is None
+
+    def encolar(self, valor):
+        nuevo_nodo = Nodo(valor)
+        if self.final is None:
+            self.frente = nuevo_nodo
+            self.final = nuevo_nodo
+        else:
+            self.final.siguiente = nuevo_nodo
+            self.final = nuevo_nodo
+
+    def desencolar(self):
+        if not self.esta_vacia():
+            valor = self.frente.valor
+            self.frente = self.frente.siguiente
+            if self.frente is None:
+                self.final = None
+            return valor
+        else:
+            messagebox.showinfo(message="La cola está vacía.")
+            return None
+
+    def vaciar(self):
+        self.frente = None
+        self.final = None
+
+    def obtener_cola(self):
+        cola_str = []
+        nodo_actual = self.frente
+        while nodo_actual is not None:
+            cola_str.append(nodo_actual.valor)
+            nodo_actual = nodo_actual.siguiente
+        return cola_str
+
+def encolar():
+    valor = ent_push.get()
+    if valor:
+        mi_cola.encolar(valor)
+        ent_push.delete(0, 'end')
+        messagebox.showinfo(message="Elemento encolado correctamente.")
+
+def desencolar():
+    valor_desencolado = mi_cola.desencolar()
+    if valor_desencolado is not None:
+        messagebox.showinfo(message=f"Elemento desencolado: {valor_desencolado}")
+
+def imprimir_cola():
+    cola_str = mi_cola.obtener_cola()
+    if cola_str:
+        message = "|".join(map(str, cola_str))
+        messagebox.showinfo("Contenido de la Cola", "|"+message+"|")
+    else:
+        messagebox.showinfo(message="La cola está vacía.")
+
+def vaciar():
+    mi_cola.vaciar()
+    messagebox.showinfo(message="Cola vaciada.")
+
+def quit():
+    ven.destroy()
+    
+
+def draw_star(canvas, x, y, size):
+    coords = [
+        x, y - size,
+        x + size / 6, y - size / 6,
+        x + size / 2, y,
+        x + size / 6, y + size / 6,
+        x, y + size / 1,
+        x - size / 6, y + size / 6,
+        x - size / 2, y,
+        x - size / 6, y - size / 6,
+    ]
+    canvas.create_polygon(coords, fill="DarkOrange1", outline="DarkOrange1")
+
+def figura(canvas, x, y, num_stars, size):
+    for _ in range(num_stars):
+        draw_star(canvas, x, y, size)
+        x += 30
+
+
+def degradado(canvas, width, height, color1, color2):
+    for i in range(width):
+        ratio = i / width
+        r = int(color1[0] * (1 - ratio) + color2[0] * ratio)
+        g = int(color1[1] * (1 - ratio) + color2[1] * ratio)
+        b = int(color1[2] * (1 - ratio) + color2[2] * ratio)
+        color = "#{:02X}{:02X}{:02X}".format(r, g, b)
+        canvas.create_line(i, 0, width, i, fill=color)
+
+# Crear una instancia de la cola
+mi_cola = Cola()
+
+# Crear la ventana principal
+ven = tkinter.Tk()
+ven.geometry("500x320")
+ven.resizable(0, 0)
+ven.configure(bg="lightGreen")
+ven.title("Cola")
+
+canvas = tkinter.Canvas(ven, width=530, height=460, bg="Black")
+canvas.place(x=-5,y=0)
+
+lab_title=tkinter.Label(ven,text="Cola",font="Impact",bg="Grey",foreground="white")
+lab_title.place(x=50,y=20,height=30,width=400)
+
+ent_push = tkinter.Entry(ven, font="Impact")
+ent_push.place(x=50, y=70, height=40, width=400)
+
+bot_push = tkinter.Button(ven, text="Queue", command=encolar, bg="DarkOrange2", font="Impact",foreground="white")
+bot_push.place(x=50, y=140, width=180, height=30)
+
+bot_pop = tkinter.Button(ven, text="Desqueue", command=desencolar, bg="DarkOrange2", font="Impact",foreground="white")
+bot_pop.place(x=50, y=200, width=180, height=30)
+
+bot_show = tkinter.Button(ven, text="Show", command=imprimir_cola, bg="DarkOrange2", font="Impact",foreground="white")
+bot_show.place(x=270, y=140, width=180, height=30)
+
+bot_vaciar = tkinter.Button(ven, text="To empty", command=vaciar, bg="DarkOrange2", font="Impact",foreground="white")
+bot_vaciar.place(x=270, y=200, width=180, height=30)
+
+bot_quit = tkinter.Button(ven, text="Quit", command=quit, bg="Red2", font="Impact",foreground="white")
+bot_quit.place(x=145, y=260, width=180, height=30)
+
+degradado(canvas, 535, 515,  (50, 50, 50),  (255, 255, 255))
+
+figura(canvas, 10, 300,20,8)
+figura(canvas, 10, 10,20,8)
+
+ven.mainloop()
