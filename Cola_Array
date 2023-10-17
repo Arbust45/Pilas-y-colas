@@ -1,0 +1,114 @@
+import tkinter
+from tkinter import *
+from tkinter import messagebox
+
+array =[None] * 12
+
+def comprobar_queue():
+    if enter_queue.get()=="":
+        messagebox.showerror(message="No se puede ingresar un valor nulo a la cola")
+        return
+    elif array[11]!=None:
+        enter_queue.delete(0,END)
+        messagebox.showwarning(message="La cola esta llena")
+    else:
+        for x in range(0,12):
+            if array[x]==None:
+                array[x]=enter_queue.get()
+                enter_queue.delete(0,END)
+                messagebox.showinfo(message="Se ingreso "+array[x]+" a la cola")
+                break
+
+def comprobar_desqueue():
+    if array[0]==None:
+        messagebox.showwarning(message="La cola esta vacia")
+    else:
+        messagebox.showinfo(message="Se extrajo "+array[0])
+        for x in range(0,11):
+            array[x] = array[x+1]
+        array[11] = None
+
+def auto_fill():
+    x=messagebox.askyesno(message="¿Seguro que quiere autollenar la cola?")
+    if x==True:
+        for x in range(0,12):
+            if array[x]!=None:
+                pass
+            else:
+                array[x]=str(x)
+    else:
+        return
+    
+def imprimir_array():
+    queue_elements = [str(x) for x in array if x is not None]
+    
+    if not queue_elements:
+        messagebox.showinfo("Contenido de la Cola", "La cola está vacía.")
+    else:
+        message = "|".join(queue_elements)
+        messagebox.showinfo("Contenido de la Cola", "|" + message + "|")
+
+def vaciar():
+    x=messagebox.askyesno(message="¿Esta seguro que quiere vaciar la cola?")
+    if x==True:
+        for x in range(0,12):
+            array[x]=None
+    else:
+        return
+
+def quit():
+    x=messagebox.askyesno(message="¿Esta seguro que quiere salir?")
+    if x==True:
+        ven.quit()
+    else:
+        return
+    
+def degradado(canvas, altura, ancho, color1, color2):
+    for i in range(ancho):
+        r = int(color1[0] * (1 - i / ancho) + color2[0] * (i / ancho))
+        g = int(color1[1] * (1 - i / ancho) + color2[1] * (i / ancho))
+        b = int(color1[2] * (1 - i / ancho) + color2[2] * (i / ancho))
+        color = "#{:02X}{:02X}{:02X}".format(r, g, b)
+
+        canvas.create_line(0, i, altura, i, fill=color)
+
+ven = tkinter.Tk()
+
+ven.geometry("500x540")
+ven.configure(bg="lightBlue")
+ven.title("Cola")
+ven.resizable(0,0)
+
+canvas = tkinter.Canvas(ven, width=500, height=600)
+canvas.place(x=-5,y=0,width=510)
+
+Frame=tkinter.Frame(canvas,width=460,height=500,bg="LightGoldenrod1")
+Frame.place(x=20,y=20)
+
+lab_title = tkinter.Label(ven, text="Cola", bg="LightGoldenrod1", font=("Impact", 22))
+lab_title.place(x=222, y=50)
+
+enter_queue=tkinter.Entry(ven,font="Impact")
+enter_queue.place(x=70,y=100,height=40,width=360)
+
+bot_queue=tkinter.Button(ven,text="Queue",command=comprobar_queue,bg="DarkSlateBlue",font="Impact")
+bot_queue.place(x=70,y=200,width=160,height=40)
+
+bot_desqueue=tkinter.Button(ven,text="Desqueue",command=comprobar_desqueue,bg="DarkSlateBlue",font="Impact")
+bot_desqueue.place(x=70,y=300,width=160,height=40)
+
+bot_fill=tkinter.Button(ven,text="Auto fill",command=auto_fill,bg="DarkSlateBlue",font="Impact")
+bot_fill.place(x=70,y=400,width=160,height=40)
+
+bot_show=tkinter.Button(ven,text="Show",command=imprimir_array,bg="DarkSlateBlue",font="Impact")
+bot_show.place(x=260,y=200,width=160,height=40)
+
+bot_vaciar=tkinter.Button(ven,text="To empty",command=vaciar,bg="DarkSlateBlue",font="Impact")
+bot_vaciar.place(x=260,y=300,width=160,height=40)
+
+bot_quit=tkinter.Button(ven,text="Quit",command=quit,bg="OrangeRed2",font="Impact")
+bot_quit.place(x=260,y=400,width=160,height=40)
+
+degradado(canvas, 500, 600, (0, 0, 255),  (255, 255, 0))
+
+ven.mainloop()
