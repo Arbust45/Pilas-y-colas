@@ -1,0 +1,138 @@
+import tkinter
+from tkinter import *
+from tkinter import messagebox
+
+class Nodo:
+    def __init__(self, valor):
+        self.valor = valor
+        self.siguiente = None
+
+class Pila:
+    def __init__(self):
+        self.cima = None
+
+    def esta_vacia(self):
+        return self.cima is None
+
+    def apilar(self, valor):
+        nuevo_nodo = Nodo(valor)
+        nuevo_nodo.siguiente = self.cima
+        self.cima = nuevo_nodo
+
+    def desapilar(self):
+        if not self.esta_vacia():
+            valor = self.cima.valor
+            self.cima = self.cima.siguiente
+            return valor
+        else:
+            messagebox.showinfo(message="La pila está vacía.")
+            return None
+
+    def vaciar(self):
+        self.cima = None
+
+    def ver_cima(self):
+        if not self.esta_vacia():
+            return self.cima.valor
+        else:
+            messagebox.showinfo(message="La pila está vacía.")
+            return None
+
+    def obtener_pila(self):
+        pila_str = []
+        nodo_actual = self.cima
+        while nodo_actual is not None:
+            pila_str.append(nodo_actual.valor)
+            nodo_actual = nodo_actual.siguiente
+        return pila_str
+
+def apilar():
+    valor = ent_push.get()
+    if valor:
+        mi_pila.apilar(valor)
+        ent_push.delete(0, 'end')  
+        messagebox.showinfo(message="Elemento apilado correctamente.")
+
+def desapilar():
+    valor_desapilado = mi_pila.desapilar()
+    if valor_desapilado is not None:
+        messagebox.showinfo(message=f"Elemento desapilado: {valor_desapilado}")
+
+def imprimir_pila():
+    pila_str = mi_pila.obtener_pila()
+    if pila_str:
+        message = "|".join(map(str, pila_str))
+        messagebox.showinfo("Contenido de la Pila", "|"+message+"|")
+    else:
+        messagebox.showinfo(message="La pila está vacía.")
+
+def vaciar():
+    mi_pila.vaciar()
+    messagebox.showinfo(message="Pila vaciada.")
+
+def quit():
+    ven.destroy()
+
+def figura(canvas, x, y, size):
+    coords = [
+        x, y - size,
+        x + size / 6, y - size / 6,
+        x + size / 2, y,
+        x + size / 6, y + size / 6,
+        x, y + size / 1,
+        x - size / 6, y + size / 6,
+        x - size / 2, y,
+        x - size / 6, y - size / 6,
+    ]
+    canvas.create_polygon(coords, fill="turquoise", outline="turquoise")
+
+def degradado(canvas, altura, ancho, color1, color2):
+    for i in range(ancho):
+        r = int(color1[0] * (1 - i / ancho) + color2[0] * (i / ancho))
+        g = int(color1[1] * (1 - i / ancho) + color2[1] * (i / ancho))
+        b = int(color1[2] * (1 - i / ancho) + color2[2] * (i / ancho))
+        color = "#{:02X}{:02X}{:02X}".format(r, g, b)
+        canvas.create_line(0, i, ancho, i, fill=color)
+
+# Crear una instancia de la pila
+mi_pila = Pila()
+
+# Crear la ventana principal
+ven = tkinter.Tk()
+ven.geometry("500x320")
+ven.resizable(0, 0)
+ven.title("Pila")
+
+canvas = tkinter.Canvas(ven, width=530, height=460, bg="Ivory")
+canvas.place(x=-5,y=0)
+
+lab_title=tkinter.Label(ven,text="Pila",font="Impact",bg="Purple",foreground="Black")
+lab_title.place(x=50,y=5,height=40,width=400)
+
+ent_push = tkinter.Entry(ven, font="Impact")
+ent_push.place(x=50, y=80, height=40, width=400)
+
+bot_push = tkinter.Button(ven, text="Apilar", command=apilar, bg="HoneyDew2", font="Impact")
+bot_push.place(x=50, y=140, width=180, height=40)
+
+bot_pop = tkinter.Button(ven, text="Desapilar", command=desapilar, bg="HoneyDew2", font="Impact")
+bot_pop.place(x=50, y=200, width=180, height=40)
+
+bot_show = tkinter.Button(ven, text="Mostrar Pila", command=imprimir_pila, bg="HoneyDew2", font="Impact")
+bot_show.place(x=270, y=140, width=180, height=40)
+
+bot_vaciar = tkinter.Button(ven, text="Vaciar Pila", command=vaciar, bg="HoneyDew2", font="Impact")
+bot_vaciar.place(x=270, y=200, width=180, height=40)
+
+bot_quit = tkinter.Button(ven, text="Salir", command=quit, bg="RosyBrown1", font="Impact")
+bot_quit.place(x=145, y=260, width=180, height=40)
+
+degradado(canvas, 530, 530, (128, 0, 128),  (0, 0, 255))
+
+figura(canvas,30,30,20)
+figura(canvas,20,45,10)
+
+figura(canvas,480,290,20)
+figura(canvas,490,270,10)
+
+ven.mainloop()
