@@ -1,0 +1,163 @@
+import tkinter
+from tkinter import *
+from tkinter import messagebox
+import math
+import random
+
+array =[None] * 12
+
+def comprobar_push():
+    a=ent_push.get()
+    if a=="":
+        messagebox.showerror(message="No se puede ingresar un valor nulo a la pila")
+        return
+    elif array[11]!=None:
+        ent_push.delete(0,END)
+        messagebox.showwarning(message="La pila esta llena")
+        return
+    else:
+        for x in range (0,12):
+            if array[x]==None:
+                array[x]=a
+                ent_push.delete(0,END)
+                messagebox.showinfo(title="Push",message="Se ingreso "+array[x]+" a la pila")
+                break
+
+def comprobar_pop():
+    if array[0]==None:
+        messagebox.showinfo(message="La pila esta vacia")
+    else:
+        for x in range (11,-1,-1):
+            if array[x]==None:
+                pass
+            elif array[x]!= None:
+                messagebox.showinfo(title="Pop",message="se extrajo "+array[x])
+                array[x]=None
+                break
+
+def auto_fill():
+    x=messagebox.askyesno(message="¿Seguro que quiere autollenar la pila?")
+    if x==True:
+        for x in range(0,12):
+            if array[x]!=None:
+                pass
+            else:
+                array[x]=str(x)
+    else:
+        return
+
+def imprimir_array():
+    #filtra elementos que no son None y conviértelos a una cadena
+    stack_elements = [str(x) for x in array if x is not None]
+    
+    if not stack_elements:
+        messagebox.showinfo("Contenido del Array", "La pila está vacía.")
+    else:
+    #Invierte el orden de los elementos
+        stack_elements = stack_elements[::-1]
+        
+        message = "\n______\n".join(stack_elements)
+        messagebox.showinfo("Contenido del Array", "______\n" + message + "\n______")
+
+def vaciar():
+    x=messagebox.askyesno(message="¿Esta seguro que quiere vaciar la Pila?")
+    if x==True:
+        for x in range(0,12):
+            array[x]=None
+    else:
+        return
+
+def quit():
+    x=messagebox.askyesno(message="¿Esta seguro que quiere salir?")
+    if x==True:
+        ven.quit()
+    else:
+        return
+    
+def figura(canvas, x, y, size):
+    canvas.create_oval(x - size / 8, y - size / 8, x + size / 8, y + size / 8, fill="saddle brown", outline="brown")
+
+    for _ in range(12):
+        angle = random.uniform(0, 2 * math.pi)
+        length = random.uniform(0.4, 0.7) * size
+        line_x = x + length * math.cos(angle)
+        line_y = y + length * math.sin(angle)
+        canvas.create_line(x, y, line_x, line_y, fill="brown", width=1)
+
+    for angle in range(0, 360, 45):
+        radian_angle = math.radians(angle)
+        petal_x = x + size * 1.5 * math.cos(radian_angle)
+        petal_y = y + size * 1.5 * math.sin(radian_angle)
+
+        petal_color = "#{:02X}{:02X}{:02X}".format(random.randint(200, 255), random.randint(100, 255), 0)
+
+        petal_coords = [
+            x, y,
+            petal_x - size / 10, petal_y - size / 10,
+            petal_x, petal_y,
+            petal_x + size / 10, petal_y - size / 10,
+            x, y,
+        ]
+        canvas.create_polygon(petal_coords, fill=petal_color, outline="orange")
+        
+def degradado(canvas, width, height, color1, color2):
+    for i in range(width):
+        ratio = i / width
+        r = int(color1[0] * (1 - ratio) + color2[0] * ratio)
+        g = int(color1[1] * (1 - ratio) + color2[1] * ratio)
+        b = int(color1[2] * (1 - ratio) + color2[2] * ratio)
+        color = "#{:02X}{:02X}{:02X}".format(r, g, b)
+        canvas.create_line(i, 0, i, height, fill=color)
+        
+def create_menu():
+    opciones = Menu()
+    mostrar = Menu(opciones, tearoff=False)
+    
+    mostrar.configure(activebackground="Lemon Chiffon",activeforeground="Black")
+    
+    opciones.add_cascade(menu=mostrar, label="More options")
+    mostrar.add_command(label="Auto fill", command=auto_fill)
+    mostrar.add_command(label="To empty", command=vaciar)
+    
+    return opciones
+
+ven=tkinter.Tk()
+
+ven.geometry("483x220")
+ven.resizable(0,0)
+ven.configure(bg="Bisque")
+ven.title("Pila")
+
+menu_bar = create_menu()
+ven.config(menu=menu_bar)
+
+canvas_1 = tkinter.Canvas(ven, width=367, height=225, bg="Bisque")
+canvas_1.place(x=-5,y=0)
+
+lab_title=tkinter.Label(ven,text="Pila",bg="Floral White",font="Impact")
+lab_title.place(x=30,y=20,height=40,width="305")
+
+ent_push=tkinter.Entry(ven,font="Impact")
+ent_push.place(x=30,y=110,height=40,width=305)
+
+bot_push=tkinter.Button(ven,text="Push",command=comprobar_push,bg="Khaki",font="Impact")
+bot_push.place(x=380,y=10,width=80,height=20)
+
+bot_pop=tkinter.Button(ven,text="Pop",command=comprobar_pop,bg="Khaki",font="Impact")
+bot_pop.place(x=380,y=60,width=80,height=20)
+
+bot_show=tkinter.Button(ven,text="Show",command=imprimir_array,bg="Khaki",font="Impact")
+bot_show.place(x=380,y=110,width=80,height=20)
+
+bot_quit=tkinter.Button(ven,text="Quit",command=quit,bg="Salmon",font="Impact")
+bot_quit.place(x=380,y=160,width=80,height=20)
+
+degradado(canvas_1, 410, 220, (144, 238, 144), (255, 218, 185))
+
+figura(canvas_1,40,35,20)
+figura(canvas_1,40,167,10)
+
+figura(canvas_1,345,150,10)
+figura(canvas_1,370,185,20)
+
+ven.mainloop()
